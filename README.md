@@ -27,3 +27,10 @@ output file:
 
 VideoHelperSuite remains a runtime dependency because this node reuses its
 format handling and encoding implementation.
+
+### Load Video (Upload) (No Audio Crash)
+
+A modified VideoHelperSuite upload loader that probes the uploaded container
+for an audio stream before exposing the lazy audio output. Silent videos return
+`None` for audio instead of failing later when VideoHelperSuite tries to run
+FFmpeg with no audio stream.

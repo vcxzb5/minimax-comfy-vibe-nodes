@@ -2,9 +2,15 @@
 
 from copy import deepcopy
 import os
+import shutil
+import subprocess
+
+import folder_paths
+from videohelpersuite.utils import ffmpeg_path, strip_path
 
 try:
     from videohelpersuite.nodes import VideoCombine
+    from videohelpersuite.load_video_nodes import LoadVideoUpload
 except ImportError as exc:  # pragma: no cover - exercised by ComfyUI loading
     raise ImportError(
         "MiniMax Comfy Vibe Nodes requires ComfyUI-VideoHelperSuite to be installed."
@@ -61,10 +67,61 @@ class SingleFileVideoCombine(VideoCombine):
         return result
 
 
+class LoadVideoUploadNoAudioCrash(LoadVideoUpload):
+    """VideoHelperSuite upload loader that treats silent videos as audio-less.
+
+    VideoHelperSuite lazily extracts audio, but its extractor raises when a
+    video has no audio stream. ComfyUI still needs a valid optional AUDIO value,
+    so this node probes the container first and returns ``None`` for silent
+    videos instead of a lazy extractor that will fail later during caching.
+    """
+
+    CATEGORY = "Vibe Nodes/Video"
+
+    @staticmethod
+    def _has_audio_stream(path):
+        ffprobe = shutil.which("ffprobe")
+        if ffprobe is None and ffmpeg_path:
+            ffprobe = os.path.join(os.path.dirname(ffmpeg_path), "ffprobe")
+        if not ffprobe or not os.path.exists(ffprobe):
+            # Preserve VideoHelperSuite's normal behavior if probing is
+            # unavailable; this avoids silently dropping valid audio.
+            return None
+
+        probe = subprocess.run(
+            [
+                ffprobe,
+                "-v", "error",
+                "-select_streams", "a:0",
+                "-show_entries", "stream=index",
+                "-of", "csv=p=0",
+                path,
+            ],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if probe.returncode != 0:
+            return None
+        return bool(probe.stdout.strip())
+
+    def load_video(self, **kwargs):
+        video_path = folder_paths.get_annotated_filepath(
+            strip_path(kwargs["video"])
+        )
+        result = super().load_video(**kwargs)
+        has_audio = self._has_audio_stream(video_path)
+        if has_audio is False:
+            result = (*result[:2], None, result[3])
+        return result
+
+
 NODE_CLASS_MAPPINGS = {
     "VibeSingleFileVideoCombine": SingleFileVideoCombine,
+    "VibeLoadVideoUploadNoAudioCrash": LoadVideoUploadNoAudioCrash,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
     "VibeSingleFileVideoCombine": "Video Combine (Single File)",
+    "VibeLoadVideoUploadNoAudioCrash": "Load Video (Upload) (No Audio Crash)",
 }
