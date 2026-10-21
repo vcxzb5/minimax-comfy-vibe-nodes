@@ -42,9 +42,3 @@ result fits inside an oriented `720 x 1088` bounding box, with dimensions
 rounded down to multiples of 16 for model compatibility. It outputs the resized
 image batch plus its width and height as integer values. Landscape video is
 bounded by `1088 x 720`, while portrait video is bounded by `720 x 1088`.
-
-## Previews
-
-The custom upload and combine nodes include a browser video preview. The upload
-node also includes a video upload button; the combine node updates its preview
-from the generated output when execution completes.
