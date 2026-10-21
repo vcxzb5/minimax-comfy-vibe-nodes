@@ -34,3 +34,11 @@ A modified VideoHelperSuite upload loader that probes the uploaded container
 for an audio stream before exposing the lazy audio output. Silent videos return
 `None` for audio instead of failing later when VideoHelperSuite tries to run
 FFmpeg with no audio stream.
+
+### MiniMax Aspect Resize
+
+Accepts an IMAGE batch and resizes it while preserving its aspect ratio. The
+result fits inside an oriented `720 x 1088` bounding box, with dimensions
+rounded down to multiples of 16 for model compatibility. It outputs the resized
+image batch plus its width and height as integer values. Landscape video is
+bounded by `1088 x 720`, while portrait video is bounded by `720 x 1088`.

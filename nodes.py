@@ -17,6 +17,7 @@ if os.path.isdir(os.path.join(_vhs_root, "videohelpersuite")):
     sys.path.insert(0, _vhs_root)
 
 from videohelpersuite.utils import ffmpeg_path, strip_path
+from .resolution_nodes import MiniMaxAspectResize
 
 try:
     from videohelpersuite.nodes import VideoCombine
@@ -129,9 +130,11 @@ class LoadVideoUploadNoAudioCrash(LoadVideoUpload):
 NODE_CLASS_MAPPINGS = {
     "VibeSingleFileVideoCombine": SingleFileVideoCombine,
     "VibeLoadVideoUploadNoAudioCrash": LoadVideoUploadNoAudioCrash,
+    "MiniMaxAspectResize": MiniMaxAspectResize,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
     "VibeSingleFileVideoCombine": "Video Combine (Single File)",
     "VibeLoadVideoUploadNoAudioCrash": "Load Video (Upload) (No Audio Crash)",
+    "MiniMaxAspectResize": "MiniMax Aspect Resize",
 }
