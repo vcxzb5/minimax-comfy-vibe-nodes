@@ -110,12 +110,6 @@ class LoadVideoUploadNoAudioCrash(LoadVideoUpload):
         inputs["required"]["video"] = (sorted(videos),)
         return inputs
 
-    def load_video(self, **kwargs):
-        # The directory is a UI selector; the selected video already contains
-        # its input-relative path and VHS resolves it safely.
-        kwargs.pop("directory", None)
-        return super().load_video(**kwargs)
-
     @staticmethod
     def _has_audio_stream(path):
         ffprobe = shutil.which("ffprobe")
@@ -144,6 +138,9 @@ class LoadVideoUploadNoAudioCrash(LoadVideoUpload):
         return bool(probe.stdout.strip())
 
     def load_video(self, **kwargs):
+        # The directory is a UI selector; the selected video already contains
+        # its input-relative path and VHS resolves it safely.
+        kwargs.pop("directory", None)
         video_path = folder_paths.get_annotated_filepath(
             strip_path(kwargs["video"])
         )
