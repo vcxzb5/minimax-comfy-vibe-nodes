@@ -10,7 +10,8 @@ DEFAULT_ALIGNMENT = 16
 
 
 def fit_dimensions(width, height, short_side=DEFAULT_SHORT_SIDE,
-                   long_side=DEFAULT_LONG_SIDE, alignment=DEFAULT_ALIGNMENT):
+                   long_side=DEFAULT_LONG_SIDE, alignment=DEFAULT_ALIGNMENT,
+                   multiplier=1.0):
     """Return aligned dimensions preserving the input aspect ratio.
 
     The result fits within an oriented bounding box of ``short_side`` by
@@ -19,9 +20,11 @@ def fit_dimensions(width, height, short_side=DEFAULT_SHORT_SIDE,
     """
     if width <= 0 or height <= 0:
         raise ValueError("Input dimensions must be positive")
-    if short_side <= 0 or long_side <= 0 or alignment <= 0:
-        raise ValueError("Target dimensions and alignment must be positive")
+    if short_side <= 0 or long_side <= 0 or alignment <= 0 or multiplier <= 0:
+        raise ValueError("Target dimensions, alignment, and multiplier must be positive")
 
+    short_side *= multiplier
+    long_side *= multiplier
     input_long = max(width, height)
     input_short = min(width, height)
     scale = min(long_side / input_long, short_side / input_short)
@@ -46,6 +49,12 @@ class MiniMaxAspectResize:
         return {
             "required": {
                 "images": ("IMAGE",),
+                "multiplier": ("FLOAT", {
+                    "default": 1.0,
+                    "min": 0.1,
+                    "max": 1.0,
+                    "step": 0.01,
+                }),
             },
         }
 
@@ -54,14 +63,16 @@ class MiniMaxAspectResize:
     FUNCTION = "resize"
     CATEGORY = "Vibe Nodes/Resolution"
 
-    def resize(self, images):
+    def resize(self, images, multiplier=1.0):
         if not isinstance(images, torch.Tensor) or images.ndim != 4:
             raise ValueError("images must be a ComfyUI IMAGE batch [B,H,W,C]")
         if images.shape[0] == 0:
             raise ValueError("images must contain at least one frame")
 
         height, width = images.shape[1:3]
-        target_width, target_height = fit_dimensions(width, height)
+        target_width, target_height = fit_dimensions(
+            width, height, multiplier=multiplier
+        )
         if (target_width, target_height) == (width, height):
             resized = images
         else:

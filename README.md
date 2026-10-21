@@ -42,3 +42,5 @@ result fits inside an oriented `720 x 1088` bounding box, with dimensions
 rounded down to multiples of 16 for model compatibility. It outputs the resized
 image batch plus its width and height as integer values. Landscape video is
 bounded by `1088 x 720`, while portrait video is bounded by `720 x 1088`.
+The `multiplier` input scales that target size before alignment rounding: `1.0`
+keeps the default behavior, while `0.7` requests approximately 70% resolution.
