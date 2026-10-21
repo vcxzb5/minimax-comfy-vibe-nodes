@@ -89,6 +89,33 @@ class LoadVideoUploadNoAudioCrash(LoadVideoUpload):
 
     CATEGORY = "Vibe Nodes/Video"
 
+    @classmethod
+    def INPUT_TYPES(cls):
+        inputs = super().INPUT_TYPES()
+        input_dir = folder_paths.get_input_directory()
+        videos = []
+        directories = {""}
+        for root, _, filenames in os.walk(input_dir):
+            relative_dir = os.path.relpath(root, input_dir)
+            if relative_dir == ".":
+                relative_dir = ""
+            else:
+                directories.add(relative_dir.replace(os.sep, "/"))
+            for filename in filenames:
+                if os.path.splitext(filename)[1].lower() not in (".webm", ".mp4", ".mkv", ".gif", ".mov"):
+                    continue
+                relative = os.path.relpath(os.path.join(root, filename), input_dir)
+                videos.append(relative.replace(os.sep, "/"))
+        inputs["required"]["directory"] = (sorted(directories),)
+        inputs["required"]["video"] = (sorted(videos),)
+        return inputs
+
+    def load_video(self, **kwargs):
+        # The directory is a UI selector; the selected video already contains
+        # its input-relative path and VHS resolves it safely.
+        kwargs.pop("directory", None)
+        return super().load_video(**kwargs)
+
     @staticmethod
     def _has_audio_stream(path):
         ffprobe = shutil.which("ffprobe")

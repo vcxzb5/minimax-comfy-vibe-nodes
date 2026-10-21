@@ -33,7 +33,9 @@ format handling and encoding implementation.
 A modified VideoHelperSuite upload loader that probes the uploaded container
 for an audio stream before exposing the lazy audio output. Silent videos return
 `None` for audio instead of failing later when VideoHelperSuite tries to run
-FFmpeg with no audio stream.
+FFmpeg with no audio stream. The node also supports selecting a directory under
+ComfyUI's input directory; its video dropdown is filtered to that directory,
+so separate node instances can iterate through separate folders.
 
 ### MiniMax Aspect Resize
 
