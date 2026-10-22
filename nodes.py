@@ -21,6 +21,7 @@ for _vhs_root in _vhs_roots:
 
 from videohelpersuite.utils import ffmpeg_path, strip_path
 from .resolution_nodes import MiniMaxAspectResize
+from .random_nodes import RandomStringPicker
 
 try:
     from videohelpersuite.nodes import VideoCombine
@@ -158,10 +159,12 @@ NODE_CLASS_MAPPINGS = {
     "VibeSingleFileVideoCombine": SingleFileVideoCombine,
     "VibeLoadVideoUploadNoAudioCrash": LoadVideoUploadNoAudioCrash,
     "MiniMaxAspectResize": MiniMaxAspectResize,
+    "VibeRandomStringPicker": RandomStringPicker,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
     "VibeSingleFileVideoCombine": "Video Combine (Single File)",
     "VibeLoadVideoUploadNoAudioCrash": "Load Video (Upload) (No Audio Crash)",
     "MiniMaxAspectResize": "MiniMax Aspect Resize",
+    "VibeRandomStringPicker": "Random String Picker (1-10)",
 }

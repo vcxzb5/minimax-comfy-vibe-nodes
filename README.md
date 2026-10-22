@@ -46,3 +46,9 @@ image batch plus its width and height as integer values. Landscape video is
 bounded by `1088 x 720`, while portrait video is bounded by `720 x 1088`.
 The `multiplier` input scales that target size before alignment rounding: `1.0`
 keeps the default behavior, while `0.7` requests approximately 70% resolution.
+
+### Random String Picker (1-10)
+
+Accepts one required string and up to nine optional string inputs, then outputs
+one randomly selected string. It is marked as changed on every execution so it
+can make a new selection on each queue run.
