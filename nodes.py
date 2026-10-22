@@ -10,11 +10,14 @@ import folder_paths
 
 # ComfyUI loads each custom-node directory independently. Add the sibling
 # VideoHelperSuite package to sys.path without modifying the upstream install.
-_vhs_root = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "..", "comfyui-videohelpersuite")
-)
-if os.path.isdir(os.path.join(_vhs_root, "videohelpersuite")):
-    sys.path.insert(0, _vhs_root)
+_vhs_roots = [
+    os.path.abspath(os.path.join(os.path.dirname(__file__), "..", name))
+    for name in ("comfyui-videohelpersuite", "ComfyUI-VideoHelperSuite")
+]
+for _vhs_root in _vhs_roots:
+    if os.path.isdir(os.path.join(_vhs_root, "videohelpersuite")):
+        sys.path.insert(0, _vhs_root)
+        break
 
 from videohelpersuite.utils import ffmpeg_path, strip_path
 from .resolution_nodes import MiniMaxAspectResize
