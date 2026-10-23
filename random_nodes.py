@@ -32,7 +32,10 @@ class RandomStringPicker:
     def pick(self, string_1, **kwargs):
         values = [string_1]
         values.extend(kwargs.get(f"string_{index}") for index in range(2, 11))
-        values = [value for value in values if value is not None]
+        # Treat empty and whitespace-only inputs as unprovided options.
+        values = [value for value in values if value is not None and str(value).strip()]
+        if not values:
+            raise ValueError("Random String Picker needs at least one non-blank string")
         return (random.choice(values),)
 
 
